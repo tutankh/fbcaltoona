@@ -1,0 +1,6 @@
+[submodule "obs-advanced-timer"]
+	path = obs-advanced-timer
+	url = https://github.com/cg2121/obs-advanced-timer.git
+[submodule "submodules/obs-advanced-timer"]
+	path = submodules/obs-advanced-timer
+	url = https://github.com/cg2121/obs-advanced-timer.git
