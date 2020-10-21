@@ -6,6 +6,16 @@ begin{
     Import-Module $PSScriptRoot\submodules\PsIni\PsIni
   #endregion
 
+  #region Basic Config
+  #endregion
+
+  #region Declare paths
+
+    $globalIniPath = "$HOME/Library/Application Support/obs-studio/global.ini"
+
+
+  #endregion
+
   #region Define Global Settings
     $gridMode = $false
     $windowGeometry = "AdnQywADAAAAAAAuAAAAFwAABGQAAAMFAAAALgAAAC0AAARkAAADBQAAAAAAAAAABwAAAAAuAAAALQAABGQAAAMF"
@@ -30,6 +40,32 @@ begin{
   #endregion
 
   #region Define Profile Settings
+    # Canvas size is the size of the Video capable of having objects dragged to it.DESCRIPTION
+    # 1920 x 1080 should allow for 1080p streaming when this becomes available. Output size
+    # would need to be adjusted to make that final.
+    $canvasX = 1920
+    $canvasY = 1080
+
+    # Output size is the format of the scaled output that will be sent to the streaming service
+    $outputX = 1280
+    $outputY = 720
+
+    # Generally Mono is pretty safe.
+    $audioChannel = "Mono"
+
+    #Don't mess with these settings unless you know what you are doing
+    $panelCookieId = "6AB072021E3861CE"
+    $fpsType = 0
+    $FPSCommon = 60
+    $vBitrate = 3530
+    $streamEncoder = "x264"
+    $recQuality = "Stream"
+
+    $mode = "Simple"
+
+    $MonitoringDeviceName = $null
+    $MonitoringDeviceId = $null
+
 
   #endregion
 
@@ -38,7 +74,9 @@ begin{
   #endregion
 
   #region Get Existing Config
-    $globalIni = Get-IniContent "$HOME/Library/Application Support/obs-studio/global.ini"
+
+    $globalIni = Get-IniContent $globalIniPath
+
   #endregion
 }
 
@@ -63,6 +101,8 @@ process{
 
     $globalIni.PropertiesWindow.cx = $propertiesX
     $globalIni.PropertiesWindow.cy = $propertiesY
+
+
 
   #endregion
 
