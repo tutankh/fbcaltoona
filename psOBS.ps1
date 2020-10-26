@@ -500,8 +500,6 @@ process{
     $globalIni.PropertiesWindow.cx = $propertiesX
     $globalIni.PropertiesWindow.cy = $propertiesY
 
-    #Write Out new Global INI file
-    $globalIni | Set-IniContent -FilePath $globalIniPath
   #endregion
 
   #region Create the profile directory if it doesn't Existing
@@ -510,10 +508,9 @@ process{
     }
   #endregion
 
-  #region Set Streaming Key and write out config
+  #region Set Streaming Key
 
     $serviceConfig.settings.key = $streamingKey
-    $serviceConfig | ConvertTo-Json -Depth 5 | Out-File -FilePath $serviceConfigPath -Force
 
   #endregion
 
@@ -545,9 +542,36 @@ process{
   #endregion
 
   #region Set Source/Monitoring device IDs in Scene Collection
+    #Camera
+    ($scenes.sources | Where-Object name -like "PTZ*Optics*").settings.device = $selectedCamera.'spcamera_unique-id'
+    ($scenes.sources | Where-Object name -like "PTZ*Optics*").settings.device_name = $selectedCamera.'_name'
+
+    #Audio Input
     $scenes.AuxAudioDevice1.settings.device_id = "AppleUSBAudioEngine:FocusRite:Scarlett 2i2 USB:$("whatitis"):$("SomeInt" ?? 1)),$("someInt")"
+
+    #Monitoring device
+    $profileIni.Audio.ChannelSetup = $ChannelSetup
+
+  #endregion
+
+  #region Write Out Config filters
+
+    #Global INI file
+    $globalIni | Set-IniContent -FilePath $globalIniPath
+
+    #Streaming Service JSON Config
+    $serviceConfig | ConvertTo-Json -Depth 5 | Out-File -FilePath $serviceConfigPath -Force
+
+    #Profile Basic IniContent
+    $profileIni | Set-IniContent -FilePath $profileIniPath
+
+    #Profile Scene Collection
+    $scenes | ConvertTo-Json -Depth 20 | Out-File -FilePath $sceneCollectionPath -Force
+
   #endregion
 }
 end{
-  Write-Host "Exiting"
+  Write-Host "Operation appears to have been successful.  Exiting script and launching OBS..."
+  Start-Sleep -seconds 5
+
 }
