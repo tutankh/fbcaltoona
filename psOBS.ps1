@@ -15,13 +15,21 @@ begin{
     $appData = "$HOME/Library/Application Support/obs-studio"
     $globalIniPath = "$appData/global.ini"
 
-    $profileIniPath = "$appData/basic/profiles/$profileName/basic.ini"
+    $profilePath = "$appdata/basic/profiles/$profileName"
 
-    $serviceConfigPath = "$appData/basic/profiles/$profileName/service.json"
+    $profileIniPath = "$profilePath/basic.ini"
+
+    $serviceConfigPath = "$profilePath/service.json"
+
+    $sceneCollectionDir = "$(Split-Path $profilePath -Parent)/scenes/$sceneCollectionName"
+    $sceneCollectionPath = "$sceneCollectionDir/$sceneCollectionName"
+
+    $countdownPluginPath = "$PSScriptRoot/submodules/obs-advanced-timer/advanced-timer.lua"
 
   #endregion
 
   #region Define Global Settings
+
     $gridMode = $false
     # Window Geometry & Dock State- This is some kind of B64 string, but at present
     # you can just use OBS to generate it.
@@ -80,8 +88,9 @@ begin{
 
   #endregion
 
-  #region Get Existing Config
+  #region Get Existing Configs, Make Default templates
 
+    #Global
     if (Test-Path $globalIniPath) {
       $globalIni = Get-IniContent $globalIniPath
     } else {
@@ -106,6 +115,7 @@ begin{
       }
     }
 
+    #Profile
     if (Test-Path $profileIniPath){
       $profileIni = Get-IniContent $profileIniPath
     } else {
@@ -119,28 +129,89 @@ begin{
       }
     }
 
-    if (Test-Path $serviceConfigPath) {
-      $streamingKey = Read-Host -Prompt "An existing config was found for Live Streaming to Facebook,`nHowever, you may still need to input a new streaming key below.`nEnter they new key, then press [Enter] to continue."
-      $serviceConfig = Get-Content $serviceConfigPath | ConvertFrom-Json -Depth 5
-    } else {
-      $streamingKey = Read-Host -Prompt "No Existing config was found for Live Streaming to Facebook.`nA new config will be generated, and you will need to get a streaming key by logging into Facebook.`nEnter the key here, then press [Enter] to continue."
-      $serviceConfig = @{
-        "settings"=@{
-          "bwtest" = $false;
-          "key" = $null;
-          "server" = "rtmps://rtmp-api.facebook.com:443/rtmp/";
-          "service" = "Facebook Live";
-        };
-        "type"="rtmp_common"
-      }
+    #Service (Live Streaming)
+    $streamingKey = Read-Host -Prompt "No Existing config was found for Live Streaming to Facebook.`nA new config will be generated, and you will need to get a streaming key by logging into Facebook.`nEnter the key here, then press [Enter] to continue."
+    $serviceConfig = @{
+      "settings"=@{
+        "bwtest" = $false;
+        "key" = $null;
+        "server" = "rtmps://rtmp-api.facebook.com:443/rtmp/";
+        "service" = "Facebook Live";
+      };
+      "type"="rtmp_common"
     }
 
-    $serviceConfig
-
+    #Scenes and Sources
+    if (-not (Test-Path $sceneCollectionDir)) {
+      New-Item -ItemType Directory $sceneCollectionDir
+    }
+    if (Test-Path $sceneCollectionPath){
+      $scenes = Get-Content $sceneCollectionPath | ConvertFrom-Json -Depth 20
+    } else {
+      $scenes = @{
+        "AuxAudioDevice1" = @{};
+        "current_program_scene" = "Black";
+        "current_scene" = "Logo";
+        "current_transition" = "Fade";
+        "groups" = @();
+        "modules" = @{
+          "auto-scene-switcher" = @{
+            "active" = $false;
+            "interval" = 300;
+            "non-matching_scene" = "";
+            "switch_if_not_matching" = $false;
+            "switches" = @();
+          };
+          "scripts-tool" = @(
+            @{
+              "path" = $countdownPluginPath;
+              "settings" = @{
+                "hour":
+              };
+            },
+          );
+        };
+        "name" = $sceneCollectionName;
+        "preview_locked" = $false;
+        "quick_transitions"=@(
+          @{
+            "id" = 1;
+            "duration" = 3000;
+            "fade_to_black" = $false;
+            "hotkeys" = @();
+            "name" = "CrossFade-3000";
+          },
+          @{
+            "id" = 2;
+            "duration" = 1500;
+            "fade_to_black" = $false;
+            "hotkeys" = @();
+            "name" = "CrossFade-1500"
+          },
+          @{
+            "id" = 3;
+            "duration" = 1000;
+            "fade_to_black" = $false;
+            "hotkeys" = @();
+            "name" = "Fade";
+          }
+        );
+        "saved_projectors" = @();
+        "scaling_enabled" = $false;
+        "scaling_level" = 0;
+        "scaling_off_x" = 0.0;
+        "scaling_off_y" = 0.0;
+        "scene_order" = @();
+        "sources" = @();
+        "transition_duration" = 300;
+        "transitions" = @()
+      }
+    }
   #endregion
 }
 
 process{
+
   #region Set Global INI Settings
 
     $globalIni.Basic.Profile = $profileName
@@ -161,6 +232,19 @@ process{
 
     $globalIni.PropertiesWindow.cx = $propertiesX
     $globalIni.PropertiesWindow.cy = $propertiesY
+
+  #endregion
+
+  #region Create the profile directory if it doesn't Existing
+    if (-not (Test-Path $profilePath)) {
+      New-Item -ItemType Directory -Path $profilePath
+    }
+  #endregion
+
+  #region Set Streaming Key and write out config
+
+    $serviceConfig.settings.key = $streamingKey
+    $serviceConfig | ConvertTo-Json -Depth 5 | Out-File -FilePath $serviceConfigPath -Force
 
   #endregion
 
