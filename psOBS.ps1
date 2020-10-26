@@ -152,7 +152,37 @@ begin{
       $scenes = Get-Content $sceneCollectionPath | ConvertFrom-Json -Depth 20
     } else {
       $scenes = @{
-        "AuxAudioDevice1" = @{};
+        "AuxAudioDevice1" = @{
+          "name" =                      "Mic/Aux";
+          "id" =                        "coreaudio_input_capture";
+          "balance" =                   0.5;
+          "deinterlace_field_order" =   0;
+          "deinterlace_mode" =          0;
+          "enabled" =                   $true;
+          "flags" =                     0;
+          "hotkeys" =                 @{
+            "libobs.mute" =            @();
+            "libobs.push-to-mute" =    @();
+            "libobs.push-to-talk" =    @();
+            "libobs.unmute" =          @();
+          };
+          "mixers" =                   255;
+          "monitoring_type" =          2;
+          "muted" =                    $false;
+          "prev_ver" =                 $defaultVer;
+          "private_settings" =         @{};
+          "push-to-mute" =             $false;
+          "push-to-mute-delay" =       0;
+          "push-to-talk" =             $false;
+          "push-to-talk-delay" =       0;
+          "settings" = @{
+            "device_id" =              "InputAudioDeviceIdString";
+          };
+          "sync" =                     140000000;
+          "versioned_id" =             "coreaudio_input_capture";
+          "volume" =                   0.9;
+
+        };
         "current_program_scene" = "Black";
         "current_scene" = "Logo";
         "current_transition" = "Fade";
@@ -214,13 +244,20 @@ begin{
         "scaling_level" = 0;
         "scaling_off_x" = 0.0;
         "scaling_off_y" = 0.0;
-        "scene_order" = @();
+        "scene_order" = @(
+          @{"name" = "Intro-Drone-Countdown-Scene";},
+          @{"name" = "Black-Screne-Scene"},
+          @{"name" = "Logo-Scene"},
+          @{"name" = "Camera-Scene"},
+          @{"name" = "White-Screne-Scene"},
+          @{"name" = "Extra-Video-Scene"}
+        );
         "sources" = @(
         #Countdown timer text layer
           @{
             "name" = "Countdown";
             "id" = "text_ft2_source";
-            "balance" = "0.5";
+            "balance" = 0.5;
             "deinterlace_field_order" = 0;
             "deinterlace_mode" = 0;
             "enabled" = $true;
@@ -253,9 +290,9 @@ begin{
             "versioned_id" = "text_ft2_source_v2";
             "volume" = 1.0;
           },
-        #White Screen
+        #White Screen Layer
           @{
-            "name" = "White-Screen";
+            "name" = "White-Screen-Layer";
             "id" = "color_source";
             "balance" = "0.5";
             "deinterlace_field_order" = 0;
@@ -277,6 +314,157 @@ begin{
             "settings" = @{};
             "sync" = 0;
             "versioned_id" = "color_source_v3";
+            "volume" = 1.0;
+          },
+        #Camera Layer
+          @{
+            "name" =                        "PTZ-Optics-Source";
+            "id" =                          "av_capture_input";
+            "balance" =                     0.5;
+            "deinterlace_field_order" =     0;
+            "deinterlace_mode" =            0;
+            "enabled" =                     $true;
+            "filters" =                     @(
+              @{
+                "balance" =                 0.5;
+                "deinterlace_field_order" = 0;
+                "deinterlace_mode" =        0;
+                "enabled" =                 $true;
+                "flags" =                   0;
+                "hotkeys" =                 @{};
+                "id" =                      "sharpness_filter";
+                "mixers" =                  0;
+                "monitoring_type" =         0;
+                "muted" =                   $false;
+                "name" =                    "Sharpen";
+                "prev_ver" =                $defaultVer;
+                "private_settings" =        @{};
+                "push-to-mute" =            $false;
+                "push-to-mute-delay" =      0;
+                "push-to-talk" =            $false;
+                "push-to-talk-delay" =      0;
+                "settings" = @{
+                    "sharpness" =           0.40000000000000000;
+                };
+                "sync" =                    0;
+                "versioned_id": =           "sharpness_filter";
+                "volume" =                  1.0
+
+              },
+              @{
+                "balance" =                 0.5;
+                "deinterlace_field_order" = 0;
+                "enabled" =                 $true;
+                "flags" =                   0;
+                "hotkeys" =                 @{};
+                "id" =                      "color_filter";
+                "mixers" =                  0;
+                "monitoring_type" =         0;
+                "muted" =                   $false;
+                "name" =                    "Color Correction";
+                "prev_ver" =                $defaultVer;
+                "private_settings" =        @{};
+                "push-to-mute" =            $false;
+                "push-to-mute-delay" =      0;
+                "push-to-talk" =            $false;
+                "push-to-talk-delay" =      0;
+                "settings" =                @{
+                  "gamma" =                 -0.3;
+                  "saturation" =            0.25;
+                };
+                "sync" =                    0;
+                "versioned_id" =            "color_filter";
+                "volume" =                  1.0;
+              }
+            );
+            "flags" =                   0;
+            "hotkeys" =                 @{};
+            "mixers" =                  0;
+            "monitoring_type" =         0;
+            "muted" =                   $false;
+            "prev_ver" =                $defaultVer;
+            "private_settings" =        @{};
+            "push-to-mute" =            $false;
+            "push-to-mute-delay" =      0;
+            "push-to-talk" =            $false;
+            "push-to-talk-delay" =      0;
+            "settings" =                @{
+              "buffering" =             $true;
+              "color_space" =           1;
+              "device" =                "deviceID";
+              "device_name" =           "deviceName";
+              "frame_rate" =            @{
+                "denominator" = 1000000.0;
+                "numerator" =   30000030.0;
+              };
+              "input_format" =          4294967295;
+              "preset" =                "AVCaptureSessionPreset1280x720";
+              "resolution" =            "{\n    \"height\": 1080,\n    \"width\": 1920\n}";
+              "use_preset" =            "true";
+              "video_range" =           2;
+            };
+            "sync" = 0;
+            "versioned_id" = "av_capture_input";
+            "volume" = 1.0;
+          },
+        #Drone Footage Layer
+          @{},
+        #White Scene
+          @{},
+        #Black Screen No Scene Contents
+          @{
+            "name" = "Black-Screen-Scene";
+            "id" = "scene";
+            "balance" = "0.5";
+            "deinterlace_field_order" = 0;
+            "deinterlace_mode" = 0;
+            "enabled" = $true;
+            "flags" = 0;
+            "hotkeys" = @{};
+            "mixers" = 0;
+            "monitoring_type" = 0;
+            "muted" = $false;
+            "prev_ver" = $defaultVer;
+            "private_settings" = @{};
+            "push-to-mute" = $false;
+            "push-to-mute-delay" = 0;
+            "push-to-talk" = $false;
+            "push-to-talk-delay" = 0;
+            "settings" = @{
+              "custom_size" = $false;
+              "id_counter" = 2;
+              "items" = @();
+            };
+            "sync" = 0;
+            "versioned_id" = "scene";
+            "volume" = 1.0;
+          },
+        #Extra Video Scene
+          @{
+            "name" = "Extra-Video-Scene";
+            "id" = "scene";
+            "balance" = "0.5";
+            "deinterlace_field_order" = 0;
+            "deinterlace_mode" = 0;
+            "enabled" = $true;
+            "flags" = 0;
+            "hotkeys" = @{};
+            "mixers" = 0;
+            "monitoring_type" = 0;
+            "muted" = $false;
+            "prev_ver" = $defaultVer;
+            "private_settings" = @{};
+            "push-to-mute" = $false;
+            "push-to-mute-delay" = 0;
+            "push-to-talk" = $false;
+            "push-to-talk-delay" = 0;
+            "settings" = @{
+              "custom_size" = $false;
+              "id_counter" = 1;
+              "items" = @();
+            };
+            "sync" = 0;
+            "versioned_id" = "scene";
             "volume" = 1.0;
           },
 
@@ -312,6 +500,8 @@ process{
     $globalIni.PropertiesWindow.cx = $propertiesX
     $globalIni.PropertiesWindow.cy = $propertiesY
 
+    #Write Out new Global INI file
+    $globalIni | Set-IniContent -FilePath $globalIniPath
   #endregion
 
   #region Create the profile directory if it doesn't Existing
@@ -327,13 +517,15 @@ process{
 
   #endregion
 
+  #region Get Connected PTZ Camera, FocusRite, and CalDigit devices
+  #Camera
   $connectedCameras = (Invoke-Command -ScriptBlock {system_profiler SPCameraDataType -json 2> /dev/null} | ConvertFrom-Json).SPCameraDataType
 
   $selectedCamera = $connectedCameras | Where-object {$_.'_name' -like "PTZ Optics*"} | Select-object -First 1
 
   if (-not $selectedCamera) {
     Clear-Host
-    $selectAltCam = Read-Host -Prompt "No 'PTZ Camera' found.  Would you like to use $($connectedCameras[0]._name)? [ yes | no ]"
+    $selectAltCam = Read-Host -Prompt "No 'PTZ Camera' found.  Would you like to use $($connectedCameras[-1]._name)? [ yes | no ]"
     Clear-Host
     if ($selectAltCam -like "y*") {
       $selectedCamera = $connectedCameras[0]
@@ -343,11 +535,18 @@ process{
       exit
     }
   }
-  Write-Host $selectedCamera._name
-  Write-Host "Loading Default Config..."
+  Write-Host $selectedCamera.'_name'
+  #Write-Host "Modifying the Config to use this Video Source..."
 
-  # Get default Config
-  $sceneCollection = Get-Content .\fbc-SceneCollectionDefault.json | ConvertFrom-Json
+  #Audio In/Out
+  $connectedAudio = (Invoke-Command -ScriptBlock {system_profiler SPAudioDataType -json 2> /dev/null} | ConvertFrom-Json).SPAudioDataType
+  $connectedUSB = (Invoke-Command -ScriptBlock {system_profiler SPUSBDataType -json 2> /dev/null} | ConvertFrom-Json).SPUSBDataType
+
+  #endregion
+
+  #region Set Source/Monitoring device IDs in Scene Collection
+    $scenes.AuxAudioDevice1.settings.device_id = "AppleUSBAudioEngine:FocusRite:Scarlett 2i2 USB:$("whatitis"):$("SomeInt" ?? 1)),$("someInt")"
+  #endregion
 }
 end{
   Write-Host "Exiting"
