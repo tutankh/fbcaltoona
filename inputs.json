@@ -1,0 +1,75 @@
+{
+  "SPAudioDataType" : [
+    {
+      "_items" : [
+        {
+          "_name" : "CalDigit Thunderbolt 3 Audio",
+          "_properties" : "coreaudio_default_audio_system_device",
+          "coreaudio_default_audio_output_device" : "spaudio_yes",
+          "coreaudio_default_audio_system_device" : "spaudio_yes",
+          "coreaudio_device_manufacturer" : "CalDigit, Inc.",
+          "coreaudio_device_output" : 2,
+          "coreaudio_device_srate" : 48000,
+          "coreaudio_device_transport" : "coreaudio_device_type_usb",
+          "coreaudio_output_source" : "Speaker"
+        },
+        {
+          "_name" : "CalDigit Thunderbolt 3 Audio",
+          "coreaudio_device_input" : 2,
+          "coreaudio_device_manufacturer" : "CalDigit, Inc.",
+          "coreaudio_device_srate" : 48000,
+          "coreaudio_device_transport" : "coreaudio_device_type_usb",
+          "coreaudio_input_source" : "spaudio_default"
+        },
+        {
+          "_name" : "Scarlett 2i2 USB",
+          "coreaudio_device_input" : 2,
+          "coreaudio_device_manufacturer" : "Focusrite",
+          "coreaudio_device_output" : 2,
+          "coreaudio_device_srate" : 192000,
+          "coreaudio_device_transport" : "coreaudio_device_type_usb",
+          "coreaudio_input_source" : "spaudio_default",
+          "coreaudio_output_source" : "spaudio_default"
+        },
+        {
+          "_name" : "PTZ Optics Camera",
+          "coreaudio_device_input" : 2,
+          "coreaudio_device_manufacturer" : "Unknown Manufacturer",
+          "coreaudio_device_srate" : 48000,
+          "coreaudio_device_transport" : "coreaudio_device_type_usb",
+          "coreaudio_input_source" : "spaudio_default"
+        },
+        {
+          "_name" : "MacBook Pro Microphone",
+          "coreaudio_default_audio_input_device" : "spaudio_yes",
+          "coreaudio_device_input" : 1,
+          "coreaudio_device_manufacturer" : "Apple Inc.",
+          "coreaudio_device_srate" : 48000,
+          "coreaudio_device_transport" : "coreaudio_device_type_builtin",
+          "coreaudio_input_source" : "MacBook Pro Microphone"
+        },
+        {
+          "_name" : "MacBook Pro Speakers",
+          "coreaudio_device_manufacturer" : "Apple Inc.",
+          "coreaudio_device_output" : 2,
+          "coreaudio_device_srate" : 48000,
+          "coreaudio_device_transport" : "coreaudio_device_type_builtin",
+          "coreaudio_output_source" : "MacBook Pro Speakers"
+        }
+      ],
+      "_name" : "coreaudio_device"
+    }
+  ],
+  "SPCameraDataType" : [
+    {
+      "_name" : "PTZ Optics Camera #3",
+      "spcamera_model-id" : "UVC Camera VendorID_11902 ProductID_1542",
+      "spcamera_unique-id" : "0x27000002e7e0606"
+    },
+    {
+      "_name" : "FaceTime HD Camera (Built-in)",
+      "spcamera_model-id" : "UVC Camera VendorID_1452 ProductID_34068",
+      "spcamera_unique-id" : "0x8020000005ac8514"
+    }
+  ]
+}

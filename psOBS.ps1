@@ -82,6 +82,7 @@ begin{
 
     $mode = "Simple"
 
+    $ChannnelSetup = $audioChannel
     $MonitoringDeviceName = $null
     $MonitoringDeviceId = $null
 
@@ -122,13 +123,17 @@ begin{
     if (Test-Path $profileIniPath){
       $profileIni = Get-IniContent $profileIniPath
     } else {
-      $profileIni = @{
-        "General"=@{};
-        "Video"=@{};
-        "Panels"=@{};
-        "SimpleOutput"=@{};
-        "Output"=@{};
-        "Audio"=@{};
+      $profileIni    = @{
+        "General"      = @{};
+        "Video"        = @{};
+        "Panels"       = @{};
+        "SimpleOutput" = @{};
+        "Output"       = @{
+          "Mode" = "Simple";
+          "RetryDelay" = 5;
+          "MaxRetries" = 24;
+        };
+        "Audio"        = @{};
       }
     }
 
@@ -161,10 +166,10 @@ begin{
           "enabled" =                   $true;
           "flags" =                     0;
           "hotkeys" =                 @{
-            "libobs.mute" =            @();
-            "libobs.push-to-mute" =    @();
-            "libobs.push-to-talk" =    @();
-            "libobs.unmute" =          @();
+            "libobs.mute" =             @();
+            "libobs.push-to-mute" =     @();
+            "libobs.push-to-talk" =     @();
+            "libobs.unmute" =           @();
           };
           "mixers" =                   255;
           "monitoring_type" =          2;
