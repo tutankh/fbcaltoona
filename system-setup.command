@@ -3,7 +3,6 @@ brew install python@3.8
 brew upgrade python@3.8
 brew cask install powershell
 brew cask install obs
-brew cask install obs-virtualcam
 brew install dockutil
 brew cask install atom
 apm install language-powershell
