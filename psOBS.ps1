@@ -10,7 +10,7 @@ begin{
     $profileName = "fbc-default-profile"
   #endregion
 
-  #region Declare paths
+  #region Declare paths & other misc variables
 
     $appData = "$HOME/Library/Application Support/obs-studio"
     $globalIniPath = "$appData/global.ini"
@@ -25,6 +25,8 @@ begin{
     $sceneCollectionPath = "$sceneCollectionDir/$sceneCollectionName"
 
     $countdownPluginPath = "$PSScriptRoot/submodules/obs-advanced-timer/advanced-timer.lua"
+
+    $defaultVer = 436207616
 
   #endregion
 
@@ -43,6 +45,7 @@ begin{
     $previewProgramMode = $true
     $dockIsLocked = $false
     $verticalVolume = $true
+    $centerSnapping = $true
 
     $propertiesX = 720
     $propertiesY = 580
@@ -101,7 +104,7 @@ begin{
           "Pre23Defaults"=$false;
           "Pre24.1Defaults"=$false;
           "FirstRun"=$true;
-          "LastVersion"=436207616;
+          "LastVersion"=$defaultVer;
         };
         "Basic"=@{};
         "BasicWindow"=@{};
@@ -166,10 +169,20 @@ begin{
             @{
               "path" = $countdownPluginPath;
               "settings" = @{
-                "hour":
+                "hour": 10;
+                "mode": "Specific time";
+                "pause_hotkey": [
+                  @{"key" = "OBS_KEY_SEMICOLON";}
+                ];
+                "reset_hotkey" = [
+                  @{"key" = "OBS_KEY_SEMICOLON";}
+                ];
+                "source" = "Countdown";
+                "stop_text" = "NOW!";
               };
             },
           );
+
         };
         "name" = $sceneCollectionName;
         "preview_locked" = $false;
@@ -202,7 +215,72 @@ begin{
         "scaling_off_x" = 0.0;
         "scaling_off_y" = 0.0;
         "scene_order" = @();
-        "sources" = @();
+        "sources" = @(
+        #Countdown timer text layer
+          @{
+            "name" = "Countdown";
+            "id" = "text_ft2_source";
+            "balance" = "0.5";
+            "deinterlace_field_order" = 0;
+            "deinterlace_mode" = 0;
+            "enabled" = $true;
+            "flags" = 0;
+            "hotkeys" = @{};
+            "mixers" = 0;
+            "monitoring_type" = 0;
+            "muted" = $false;
+            "prev_ver" = $defaultVer;
+            "private_settings" = @{};
+            "push-to-mute" = $false;
+            "push-to-mute-delay" = 0;
+            "push-to-talk" = $false;
+            "push-to-talk-delay" = 0;
+            "settings" = @{
+              "color1" = 4289189796;
+              "color2" = 4290337863;
+              "drop_shadow" = $true;
+              "font" = @{
+                "face" = "Heiti SC";
+                "flags" = 0;
+                "size" = 256;
+                "style" = "Light";
+              };
+              "outline" = $false;
+            # Text below is a placeholder. Actual text to be retrieved automatically
+              "text" = "NOW!!";
+            };
+            "sync" = 0;
+            "versioned_id" = "text_ft2_source_v2";
+            "volume" = 1.0;
+          },
+        #White Screen
+          @{
+            "name" = "White-Screen";
+            "id" = "color_source";
+            "balance" = "0.5";
+            "deinterlace_field_order" = 0;
+            "deinterlace_mode" = 0;
+            "enabled" = $true;
+            "flags" = 0;
+            "hotkeys" = @{};
+            "mixers" = 0;
+            "monitoring_type" = 0;
+            "muted" = $false;
+            "prev_ver" = $defaultVer;
+            "private_settings" = @{};
+            "push-to-mute" = $false;
+            "push-to-mute-delay" = 0;
+            "push-to-talk" = $false;
+            "push-to-talk-delay" = 0;
+          # There are no settings because this is the default color.  Changing the color
+          # would require adding settings.
+            "settings" = @{};
+            "sync" = 0;
+            "versioned_id" = "color_source_v3";
+            "volume" = 1.0;
+          },
+
+        );
         "transition_duration" = 300;
         "transitions" = @()
       }
@@ -229,6 +307,7 @@ process{
     $globalIni.BasicWindow.PreviewProgramMode = $previewProgramMode
     $globalIni.BasicWindow.DocksLocked = $dockIsLocked
     $globalIni.BasicWindow.VerticalVolControl = $verticalVolume
+    $globalIni.BasicWindow.CenterSnapping = $centerSnapping
 
     $globalIni.PropertiesWindow.cx = $propertiesX
     $globalIni.PropertiesWindow.cy = $propertiesY
