@@ -7,12 +7,17 @@ begin{
   #endregion
 
   #region Basic Config
+    $profileName = "fbc-default-profile"
   #endregion
 
   #region Declare paths
 
-    $globalIniPath = "$HOME/Library/Application Support/obs-studio/global.ini"
+    $appData = "$HOME/Library/Application Support/obs-studio"
+    $globalIniPath = "$appData/global.ini"
 
+    $profileIniPath = "$appData/basic/profiles/$profileName/basic.ini"
+
+    $serviceConfigPath = "$appData/basic/profiles/$profileName/service.json"
 
   #endregion
 
@@ -34,14 +39,14 @@ begin{
     $propertiesX = 720
     $propertiesY = 580
 
-    $profileName = "fbc-default-profile"
-    $profileDir = "fbc-default-profile"
-    $sceneCollectionName = "fbc-default-scenes"
-    $sceneCollectionFile = "fbc-default-scenes"
+    $profileDirName = $profileName
+    $sceneCollectionName = "$profileName-scenes"
+    $sceneCollectionFile = "$profileName-scenes"
 
   #endregion
 
   #region Define Profile Settings
+
     # Canvas size is the size of the Video capable of having objects dragged to it.DESCRIPTION
     # 1920 x 1080 should allow for 1080p streaming when this becomes available. Output size
     # would need to be adjusted to make that final.
@@ -56,6 +61,7 @@ begin{
     $audioChannel = "Mono"
 
     #Don't mess with these settings unless you know what you are doing
+
     $panelCookieId = "6AB072021E3861CE"
     $fpsType = 0
     $FPSCommon = 60
@@ -68,7 +74,6 @@ begin{
     $MonitoringDeviceName = $null
     $MonitoringDeviceId = $null
 
-
   #endregion
 
   #region Define Scene collection
@@ -77,7 +82,60 @@ begin{
 
   #region Get Existing Config
 
-    $globalIni = Get-IniContent $globalIniPath
+    if (Test-Path $globalIniPath) {
+      $globalIni = Get-IniContent $globalIniPath
+    } else {
+      $globalIni = @{
+        "General"=@{
+          "Pre19Defaults"=$false;
+          "Pre21Defaults"=$false;
+          "Pre23Defaults"=$false;
+          "Pre24.1Defaults"=$false;
+          "FirstRun"=$true;
+          "LastVersion"=436207616;
+        };
+        "Basic"=@{};
+        "BasicWindow"=@{};
+        "ScriptLogWindow"=@{
+          "geometry"="AdnQywADAAAAAAAAAAAAKwAAAlcAAAG6AAAAAAAAACsAAAJXAAABugAAAAAAAAAABwAAAAAAAAAAKwAAAlcAAAG6";
+        };
+        "PropertiesWindow"=@{};
+        "scripts-tool"=@{
+          "prevScriptRow"=0
+        }
+      }
+    }
+
+    if (Test-Path $profileIniPath){
+      $profileIni = Get-IniContent $profileIniPath
+    } else {
+      $profileIni = @{
+        "General"=@{};
+        "Video"=@{};
+        "Panels"=@{};
+        "SimpleOutput"=@{};
+        "Output"=@{};
+        "Audio"=@{};
+      }
+    }
+
+    if (Test-Path $serviceConfigPath) {
+      $streamingKey = Read-Host -Prompt "An existing config was found for Live Streaming to Facebook,`nHowever, you may still need to input a new streaming key below.`nEnter they new key, then press [Enter] to continue."
+      $serviceConfig = Get-Content $serviceConfigPath | ConvertFrom-Json -Depth 5
+    } else {
+      $streamingKey = Read-Host -Prompt "No Existing config was found for Live Streaming to Facebook.`nA new config will be generated, and you will need to get a streaming key by logging into Facebook.`nEnter the key here, then press [Enter] to continue."
+      $serviceConfig = @{
+        "settings"=@{
+          "bwtest" = $false;
+          "key" = $null;
+          "server" = "rtmps://rtmp-api.facebook.com:443/rtmp/";
+          "service" = "Facebook Live";
+        };
+        "type"="rtmp_common"
+      }
+    }
+
+    $serviceConfig
 
   #endregion
 }
@@ -86,7 +144,7 @@ process{
   #region Set Global INI Settings
 
     $globalIni.Basic.Profile = $profileName
-    $globalIni.Basic.ProfileDir = $profileDir
+    $globalIni.Basic.ProfileDir = $profileDirName
     $globalIni.Basic.sceneCollectionName = $sceneCollectionName
     $globalIni.Basic.sceneCollectionFile = $sceneCollectionFile
 
@@ -103,8 +161,6 @@ process{
 
     $globalIni.PropertiesWindow.cx = $propertiesX
     $globalIni.PropertiesWindow.cy = $propertiesY
-
-
 
   #endregion
 
