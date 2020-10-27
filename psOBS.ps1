@@ -22,7 +22,7 @@ begin{
     $serviceConfigPath = "$profilePath/service.json"
 
     $sceneCollectionDir = "$(Split-Path $profilePath -Parent)/scenes/$sceneCollectionName"
-    $sceneCollectionPath = "$sceneCollectionDir/$sceneCollectionName"
+    $sceneCollectionPath = "$sceneCollectionDir/$sceneCollectionName.json"
 
     $countdownPluginPath = "$PSScriptRoot/submodules/obs-advanced-timer/advanced-timer.lua"
 
@@ -479,6 +479,13 @@ begin{
       }
     }
   #endregion
+  #region Get Connected A/V devices
+
+    $connectedCameras = (Invoke-Command -ScriptBlock {system_profiler SPCameraDataType -json 2> /dev/null} | ConvertFrom-Json).SPCameraDataType
+    $connectedAudio = (Invoke-Command -ScriptBlock {system_profiler SPAudioDataType -json 2> /dev/null} | ConvertFrom-Json).SPAudioDataType
+    $connectedUSB = (Invoke-Command -ScriptBlock {system_profiler SPUSBDataType -json 2> /dev/null} | ConvertFrom-Json).SPUSBDataType
+
+  #endregion
 }
 
 process{
@@ -521,7 +528,6 @@ process{
 
   #region Get Connected PTZ Camera, FocusRite, and CalDigit devices
   #Camera
-  $connectedCameras = (Invoke-Command -ScriptBlock {system_profiler SPCameraDataType -json 2> /dev/null} | ConvertFrom-Json).SPCameraDataType
 
   $selectedCamera = $connectedCameras | Where-object {$_.'_name' -like "PTZ Optics*"} | Select-object -First 1
 
@@ -541,8 +547,25 @@ process{
   #Write-Host "Modifying the Config to use this Video Source..."
 
   #Audio In/Out
-  $connectedAudio = (Invoke-Command -ScriptBlock {system_profiler SPAudioDataType -json 2> /dev/null} | ConvertFrom-Json).SPAudioDataType
-  $connectedUSB = (Invoke-Command -ScriptBlock {system_profiler SPUSBDataType -json 2> /dev/null} | ConvertFrom-Json).SPUSBDataType
+
+  #Input
+
+  #Output
+  $audioOutputs = $connectedAudio._items | Where-Object {$_.coreaudio_device_output}
+  $selectedAudioOut = $audioOutputs | Where-Object {$_.coreaudio_output_source -eq "Speaker"}
+  if (-not $selectedAudioOut) {
+    Clear-Host
+    $selectAltAudioOutput = Read-Host -Prompt "No docked audio output device found. `nDo you want to use $($audioOutputs | Select-Object -First 1 -ExpandProperty "_name") [ yes | no ]?"
+    Clear-Host
+    if ($selectAltAudioOutput -like "y*") {
+      $selectedAudioOut = $audioOutputs | Select-Object -First 1
+      Write-Host "Selected $($selectedAudioOut.'_name')"
+      Start-Sleep -Seconds 2
+    } else {
+      Write-Host "Failed to enumerate Audio device. Exiting..."
+      Start-Sleep -Seconds 4
+    }
+  }
 
   #endregion
 
@@ -568,7 +591,7 @@ process{
     $serviceConfig | ConvertTo-Json -Depth 5 | Out-File -FilePath $serviceConfigPath -Force
 
     #Profile Basic IniContent
-    $profileIni | Set-IniContent -FilePath $profileIniPath
+    $profileIni | Set-IniContent -FilePath $profileIniPath -Force
 
     #Profile Scene Collection
     $scenes | ConvertTo-Json -Depth 20 | Out-File -FilePath $sceneCollectionPath -Force
