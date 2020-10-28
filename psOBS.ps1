@@ -204,18 +204,18 @@ begin{
             @{
               "path" = $countdownPluginPath;
               "settings" = @{
-                "hour": 10;
-                "mode": "Specific time";
-                "pause_hotkey": [
+                "hour"= 10;
+                "mode"= "Specific time";
+                "pause_hotkey" = @(
                   @{"key" = "OBS_KEY_SEMICOLON";}
-                ];
-                "reset_hotkey" = [
+                );
+                "reset_hotkey" = @(
                   @{"key" = "OBS_KEY_SEMICOLON";}
-                ];
+                );
                 "source" = "Countdown";
                 "stop_text" = "NOW!";
               };
-            },
+            };
           );
 
         };
@@ -352,7 +352,7 @@ begin{
                     "sharpness" =           0.40000000000000000;
                 };
                 "sync" =                    0;
-                "versioned_id": =           "sharpness_filter";
+                "versioned_id" =           "sharpness_filter";
                 "volume" =                  1.0
 
               },
@@ -404,7 +404,7 @@ begin{
               };
               "input_format" =          4294967295;
               "preset" =                "AVCaptureSessionPreset1280x720";
-              "resolution" =            "{\n    \"height\": 1080,\n    \"width\": 1920\n}";
+              "resolution" =            '{\n    \"height\": 1080,\n    \"width\": 1920\n}';
               "use_preset" =            "true";
               "video_range" =           2;
             };
@@ -471,7 +471,7 @@ begin{
             "sync" = 0;
             "versioned_id" = "scene";
             "volume" = 1.0;
-          },
+          };
 
         );
         "transition_duration" = 300;
@@ -585,13 +585,13 @@ process{
   #region Write Out Config filters
 
     #Global INI file
-    $globalIni | Set-IniContent -FilePath $globalIniPath
+    $globalIni | Out-IniFile -FilePath $globalIniPath -Force
 
     #Streaming Service JSON Config
     $serviceConfig | ConvertTo-Json -Depth 5 | Out-File -FilePath $serviceConfigPath -Force
 
     #Profile Basic IniContent
-    $profileIni | Set-IniContent -FilePath $profileIniPath -Force
+    $profileIni | Out-IniFile -FilePath $profileIniPath -Force
 
     #Profile Scene Collection
     $scenes | ConvertTo-Json -Depth 20 | Out-File -FilePath $sceneCollectionPath -Force
@@ -601,5 +601,7 @@ process{
 end{
   Write-Host "Operation appears to have been successful.  Exiting script and launching OBS..."
   Start-Sleep -seconds 5
+
+  /Applications/OBS.app/Contents/MacOS/obs --collection $sceneCollectionName --profile $profileName --studio-mode --scene "Camera"
 
 }

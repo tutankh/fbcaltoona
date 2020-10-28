@@ -13,3 +13,4 @@ brew cask install audacity
 
 
 brew link powershell
+chmod a+x ./launch-obs.command
